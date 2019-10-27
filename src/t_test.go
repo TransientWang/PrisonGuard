@@ -42,18 +42,3 @@ func TestName(t *testing.T) {
 	exit <- os.Interrupt
 }
 
-func TsestNames(t *testing.T) {
-	var err chan int
-	err = make(chan int)
-	go func() {
-		fmt.Println("begin")
-		err <- 1
-		fmt.Println("end")
-	}()
-	go func() {
-		fmt.Println("beginc")
-		a := <-err
-		fmt.Println(a)
-	}()
-	time.Sleep(3 * time.Second)
-}
