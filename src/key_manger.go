@@ -30,7 +30,7 @@ func (rds RedisKeyManager) AddKey(pattern interface{}) {
 			parameters = append(parameters, rds.KeyGenerateStrategy(key)...)
 		}
 	default:
-		panic("pattern invalidatel")
+		panic("pattern intvalidate")
 	}
 	res := rds.Rds.ZAdd(rds.ManagerKey, parameters...)
 	if res != nil && res.Err() != nil {
