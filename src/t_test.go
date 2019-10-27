@@ -40,5 +40,5 @@ func TestName(t *testing.T) {
 		}
 	}()
 	exit <- os.Interrupt
-}
 
+}
