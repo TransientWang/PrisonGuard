@@ -40,8 +40,6 @@ func (rds RedisKeyManager) AddKey(pattern interface{}) {
 
 func (rds RedisKeyManager) BeginWork() {
 	for range time.Tick(time.Duration(rds.SurvivalMinute) * time.Minute) {
-		var deleteKeys []interface{}
-		pipline := rds.Rds.Pipeline()
 		rangeRes := rds.Rds.ZRangeByScore(rds.ManagerKey, &redis.ZRangeBy{
 			Min:    "0",
 			Max:    fmt.Sprintf("%d", time.Now().Unix()-int64(rds.SurvivalMinute)*60),
@@ -52,6 +50,8 @@ func (rds RedisKeyManager) BeginWork() {
 			rds.Error <- fmt.Errorf("RedisKeyManager get keys from cache err :%s ", rangeRes.Err())
 			continue
 		}
+
+		pipline := rds.Rds.Pipeline()
 		for _, v := range rangeRes.Val() {
 			pipline.Expire(v, time.Duration(rand.Intn(rds.SurvivalMinute))*time.Minute)
 		}
@@ -61,6 +61,8 @@ func (rds RedisKeyManager) BeginWork() {
 			rds.Error <- fmt.Errorf("RedisKeyManager delete keys err :%s ", err)
 			return
 		}
+
+		var deleteKeys []interface{}
 		for _, v := range rangeRes.Val() {
 			deleteKeys = append(deleteKeys, v)
 		}
